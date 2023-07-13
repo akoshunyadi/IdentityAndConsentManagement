@@ -8,7 +8,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.2.0-wip
+  version: 0.1.0-wip
 externalDocs:
   description: Product documentation at Camara
   url: https://github.com/camaraproject/
@@ -25,7 +25,119 @@ servers:
         default: consent/v0
         description: 
 paths:
- 
+  /consents:
+    post:
+      tags:
+        - Consent management
+      summary: Creates a consent record
+      description: Create a user consent record
+      operationId: createConsent
+      requestBody:
+        description: Parameters to create a consent record
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateConsentRecord"
+#            examples:
+
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentRecord'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '409':
+          $ref: '#/components/responses/Generic409'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '501':
+          $ref: "#/components/responses/Generic501"
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /consents/{consent-id}:
+    get:
+      tags:
+        - Consent management
+      summary: Retrieves a consent record
+      description: Retrieves a consent record
+      operationId: getConsent
+      parameters:
+        - name: consent-id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/ConsentId"
+      requestBody:
+        description: Parameters to update a consent record
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateConsentRecord"
+      #            examples:
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentRecord'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '501':
+          $ref: "#/components/responses/Generic501"
+        '503':
+          $ref: '#/components/responses/Generic503'
+
+    patch:
+      tags:
+        - Consent management
+      summary: Updates a consent record
+      description: Updates a consent record
+      operationId: updateConsent
+      parameters:
+        - name: consent-id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/ConsentId"
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentRecord'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '501':
+          $ref: "#/components/responses/Generic501"
+        '503':
+          $ref: '#/components/responses/Generic503'
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -43,7 +155,105 @@ components:
           scopes: {}
           
   schemas:
-   
+    CreateConsentRecord:
+      description: Attributes required to create a consent record
+      type: object
+      required:
+        - appId
+        - policyId
+        - targetDeviceId
+        - subscriberId
+        - consentStatus
+      properties:
+        appId:
+          $ref: '#/components/schemas/AppId'
+        policyId:
+          $ref: '#/components/schemas/PolicyId'
+        targetDeviceId:
+          $ref: '#/components/schemas/TargetDeviceId'
+        subscriberId:
+          $ref: '#/components/schemas/SubscriberId'
+        consentStatus:
+          $ref: '#/components/schemas/ConsentStatus'
+        consentDateTime:
+          $ref: '#/components/schemas/ConsentDateTime'
+        consentExpiryDate:
+          $ref: '#/components/schemas/ConsentExpiryDate'
+
+    ConsentRecord:
+      description: Attributes of a consent record
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CreateConsentRecord'
+        - type: object
+          required:
+            - consentId
+          properties:
+            consentId:
+              $ref: '#/components/schemas/ConsentId'
+
+    UpdateConsentRecord:
+      description: Attributes to update a consent record
+      type: object
+      required:
+        - consentStatus
+      properties:
+        consentStatus:
+          $ref: '#/components/schemas/ConsentStatus'
+        consentDateTime:
+          $ref: '#/components/schemas/ConsentDateTime'
+        consentExpiryDate:
+          $ref: '#/components/schemas/ConsentExpiryDate'
+
+    ConsentId:
+      description: Consent identifier
+      type: string
+      format: uuid
+
+    AppId:
+      description: Application identifier
+      type: string
+
+    PolicyId:
+      description: Identifier of the policy this consent is based on
+      type: string
+
+    TargetDeviceId:
+      description: Device identifier
+      type: object
+      properties:
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+
+    PhoneNumber:
+      description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, optionally prefixed with '+'.
+      type: string
+      pattern: '^\+?[0-9]{5,15}$'
+      example: "123456789"
+
+    SubscriberId:
+      description: Subscriber identifier
+      type: string
+
+    ConsentStatus:
+      description: Consent granted or denied
+      type: string
+      enum:
+        - GRANTED
+        - DENIED
+
+    ConsentDateTime:
+      description: Date time of the user consent. Current time is used, if missing.
+      type: string
+      format: date-time
+      example: 2023-05-30T10:18:28Z
+
+    ConsentExpiryDate:
+      description: Date time when the consent will expire. No expiry, if missing.
+      type: string
+      format: date-time
+      example: 2023-05-30T10:18:28Z
+
     ErrorInfo:
       type: object
       required:
@@ -101,6 +311,15 @@ components:
             status: 404
             code: NOT_FOUND
             message: 'The specified resource is not found'
+    Generic409:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            code: CONFLICT
+            message: "The specified resource is in a conflict"
     Generic500:
       description: Internal server error
       content:
@@ -111,6 +330,16 @@ components:
             status: 500
             code: INTERNAL
             message: 'Internal server error'
+    Generic501:
+      description: Not Implemented
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            status: 501
+            code: NOT_IMPLEMENTED
+            message: "Service not implemented"
     Generic503:
       description: Service unavailable
       content:
