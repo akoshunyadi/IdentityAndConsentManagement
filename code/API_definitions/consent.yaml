@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: 
-  description:    
+  title: User consent management
+  description: User consent management
   termsOfService: http://swagger.io/terms/
   contact:
     email: project-email@sample.com
@@ -13,8 +13,9 @@ externalDocs:
   description: Product documentation at Camara
   url: https://github.com/camaraproject/
 security:
-  - oAuth2ClientCredentials: []
-  - three_legged: []    
+  - openId:
+      - consent_write
+      - consent_read
 servers:
   - url: '{apiRoot}/{basePath}'
     variables:
@@ -23,7 +24,7 @@ servers:
         description: API root
       basePath:
         default: consent/v0
-        description: 
+        description: Base path for user consent management
 paths:
   /consents:
     post:
@@ -39,8 +40,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateConsentRecord"
-#            examples:
-
+#      examples:
       responses:
         '201':
           description: Created
@@ -62,6 +62,11 @@ paths:
           $ref: "#/components/responses/Generic501"
         '503':
           $ref: '#/components/responses/Generic503'
+
+      security:
+       - openId:
+          - consent_write
+
   /consents/{consent-id}:
     get:
       tags:
@@ -105,6 +110,10 @@ paths:
         '503':
           $ref: '#/components/responses/Generic503'
 
+      security:
+        - openId:
+            - consent_read
+
     patch:
       tags:
         - Consent management
@@ -138,21 +147,14 @@ paths:
           $ref: "#/components/responses/Generic501"
         '503':
           $ref: '#/components/responses/Generic503'
+      security:
+        - openId:
+            - consent_write
 components:
   securitySchemes:
-    oAuth2ClientCredentials:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: '{tokenUrl}'
-          scopes: {}
-    three_legged:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: https://auth.example.com/authorize
-          tokenUrl: https://auth.example.com/token
-          scopes: {}
+    openId:
+      type: openIdConnect
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
           
   schemas:
     CreateConsentRecord:
