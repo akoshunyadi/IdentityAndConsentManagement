@@ -158,18 +158,26 @@ components:
         - dataSubject
         - consentStatus
       properties:
-        appId:
-          $ref: '#/components/schemas/AppId'
-        policyId:
-          $ref: '#/components/schemas/PolicyId'
+        applicationId:
+          $ref: '#/components/schemas/ApplicationId'
+        purpose:
+          $ref: '#/components/schemas/Purpose'
+        scope:
+          $ref: '#/components/schemas/Scope'
         dataSubject:
-          $ref: '#/components/schemas/DataSubject'    
+          $ref: '#/components/schemas/DataSubject'
+        legalGuardian:
+          $ref: '#/components/schemas/LegalGuardian'
         consentStatus:
           $ref: '#/components/schemas/ConsentStatus'
+        consentChannel:
+          $ref: '#/components/schemas/ConsentChannel'
         consentDateTime:
           $ref: '#/components/schemas/ConsentDateTime'
         consentExpiryDate:
           $ref: '#/components/schemas/ConsentExpiryDate'
+        legalText:
+          $ref: '#/components/schemas/LegalText'
 
     ConsentRecord:
       description: Attributes of a consent record
@@ -201,32 +209,35 @@ components:
       type: string
       format: uuid
 
-    AppId:
+    ApplicationId:
       description: Application identifier
-      type: string
+      type: string  
 
-    PolicyId:
-      description: Identifier of the policy this consent is based on
+    Purpose:
+      description: The purpose of the API usage
+      type: string
+      
+    Scope:
+      description: The scope of the API usage
       type: string
 
     DataSubject:
       description: Data subject
       type: object
       required:
-        - targetDeviceId
-        - subscriberId
+        - phoneNumber
       properties:
-        targetDeviceId:
-          $ref: '#/components/schemas/TargetDeviceId'
-        subscriberId:
-          $ref: '#/components/schemas/SubscriberId'  
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'         
           
-    TargetDeviceId:
-      description: Device identifier
-      type: object
+    LegalGuardian:
+      description: The authentication device
+      type: object     
       properties:
         phoneNumber:
           $ref: "#/components/schemas/PhoneNumber"
+        subscriberId:
+          $ref: "#/components/schemas/SubscriberId"    
 
     SubscriberId:
       description: Subscriber identifier
@@ -244,6 +255,10 @@ components:
       enum:
         - GRANTED
         - DENIED
+        
+    ConsentChannel:
+      description: Communication channel for granting the consent 
+      type: string
 
     ConsentDateTime:
       description: Date time of the user consent. Current time is used, if missing.
@@ -256,6 +271,23 @@ components:
       type: string
       format: date-time
       example: 2023-05-30T10:18:28Z
+
+    LegalText:
+      description: Legal text for user consent
+      type: object
+      properties: 
+        id:
+          $ref: '#/components/schemas/TextId'
+        Version:
+          $ref: '#/components/schemas/TextVersion'
+
+    TextId:
+      description: Text identifier
+      type: string
+
+    TextVersion:
+      description: Text version
+      type: string
 
     ErrorInfo:
       type: object
