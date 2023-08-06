@@ -153,10 +153,15 @@ components:
       description: Attributes required to create a consent record
       type: object
       required:
-        - appId
-        - policyId
+        - applicationId
+        - purpose
+        - scope
         - dataSubject
+        - legalGuardian
         - consentStatus
+        - consentChannel
+        - consentDateTime
+        - legalText
       properties:
         applicationId:
           $ref: '#/components/schemas/ApplicationId'
@@ -208,21 +213,25 @@ components:
       description: Consent identifier
       type: string
       format: uuid
+      example: "70ccff32-348a-11ee-be56-0242ac120002"
 
     ApplicationId:
-      description: Application identifier
-      type: string  
+      description: Unique application identifier
+      type: string 
+      example: "MagicApp-168547"
 
     Purpose:
       description: The purpose of the API usage
       type: string
+      example: "service-provisioning"
       
     Scope:
       description: The scope of the API usage
       type: string
+      example: "location-verification-read"
 
     DataSubject:
-      description: Data subject
+      description: Subject of the personal data referenced in scope
       type: object
       required:
         - phoneNumber
@@ -230,8 +239,8 @@ components:
         phoneNumber:
           $ref: '#/components/schemas/PhoneNumber'         
           
-    LegalGuardian:
-      description: The authentication device
+    LegalGuardian:  
+      description: The responsible person for data-subject
       type: object     
       properties:
         phoneNumber:
@@ -240,8 +249,10 @@ components:
           $ref: "#/components/schemas/SubscriberId"    
 
     SubscriberId:
-      description: Subscriber identifier
+      description: Mobile network subscriber identifier
       type: string
+      example: "123456789"
+      
 
     PhoneNumber:
       description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, optionally prefixed with '+'.
@@ -259,21 +270,22 @@ components:
     ConsentChannel:
       description: Communication channel for granting the consent 
       type: string
+      example: "SMS"
 
     ConsentDateTime:
       description: Date time of the user consent. Current time is used, if missing.
       type: string
       format: date-time
-      example: 2023-05-30T10:18:28Z
+      example: "2023-05-30T10:18:28Z"
 
     ConsentExpiryDate:
       description: Date time when the consent will expire. No expiry, if missing.
       type: string
       format: date-time
-      example: 2023-05-30T10:18:28Z
+      example: "2023-05-30T10:18:28Z"
 
     LegalText:
-      description: Legal text for user consent
+      description: Legal text to capture the user consent
       type: object
       properties: 
         id:
@@ -284,10 +296,12 @@ components:
     TextId:
       description: Text identifier
       type: string
+      example: "3524"
 
     TextVersion:
       description: Text version
       type: string
+      example: "2.1"
 
     ErrorInfo:
       type: object
