@@ -8,7 +8,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.1.0-wip
+  version: 0.1.0-wip-v1
 externalDocs:
   description: Product documentation at Camara
   url: https://github.com/camaraproject/
@@ -201,9 +201,13 @@ components:
       type: object
       required:
         - consentStatus
+        - consentChannel
+        - consentDateTime
       properties:
         consentStatus:
           $ref: '#/components/schemas/ConsentStatus'
+        consentChannel:
+          $ref: '#/components/schemas/ConsentChannel'
         consentDateTime:
           $ref: '#/components/schemas/ConsentDateTime'
         consentExpiryDate:
@@ -251,8 +255,7 @@ components:
     SubscriberId:
       description: Mobile network subscriber identifier
       type: string
-      example: "123456789"
-      
+      example: "123456789"      
 
     PhoneNumber:
       description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, optionally prefixed with '+'.
